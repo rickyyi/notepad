@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration scan="true" scanPeriod="1800 seconds"    debug="false">
+
+    <property name="logRoot" value="/mnt/sdc/data/appLogs/approve_api" />
+    <property scope="context" name="fileName" value="upenny-approve-log" />
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n </pattern>
+        </encoder>
+        <!-- 此日志appender是为开发使用，只配置最底级别，控制台输出的日志级别是大于或等于此级别的日志信息-->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+    </appender>
+
+    <appender name="file-info" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <append>true</append>
+        <prudent>false</prudent>
+        <file>${logRoot}/approve-info.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${logRoot}/approve_info_%d{yyyyMMdd}.%i.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+            <TimeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>500MB</maxFileSize>
+            </TimeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d [%thread] %-5level %logger - %msg%n</pattern>
+        </encoder>
+        <!-- 此日志文件只记录info级别，不记录大于info级别的日志 -->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>DEBUG</level>
+        </filter>
+    </appender>
+
+    <appender name="file-decision" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <append>true</append>
+        <prudent>false</prudent>
+        <file>${logRoot}/approve-decision.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${logRoot}/approve-decision_%d{yyyyMMdd}.%i.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+            <TimeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>500MB</maxFileSize>
+            </TimeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d [%thread] %-5level %logger - %msg%n</pattern>
+        </encoder>
+        <!-- 此日志文件只记录DEBUG级别，不记录大于DEBUG级别的日志 -->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+    </appender>
+
+
+    <appender name="file-warn" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <append>true</append>
+        <prudent>false</prudent>
+        <file>${logRoot}/approve-warn.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${logRoot}/approve_%d{yyyyMMdd}.%i.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+            <TimeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>500MB</maxFileSize>
+            </TimeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <encoder>
+            <pattern> %d [%thread] %-5level %logger - %msg%n</pattern>
+        </encoder>
+        <!-- 此日志文件只记录warn级别，不记录大于warn级别的日志 -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>WARN</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <appender name="file-error" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <append>true</append>
+        <prudent>false</prudent>
+        <file>${logRoot}/approve-error.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${logRoot}/approve_error_%d{yyyyMMdd}.%i.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+            <TimeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>500MB</maxFileSize>
+            </TimeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d [%thread] %-5level %logger - %msg%n</pattern>
+        </encoder>
+        <!-- 此日志文件只记录ERROR级别，不记录大于ERROR级别的日志 -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <!--
+            为单独的包配置日志级别，若root的级别大于此级别， 此处级别也会输出
+            应用场景：生产环境一般不会将日志级别设置为trace或debug，
+    其它包则会按root的级别输出日志
+-->
+    <logger name="org.springframework.beans.TypeConverterDelegate" >
+        <level value="ERROR" />
+    </logger>
+
+    <logger name="cn.upenny" level="DEBUG" additivity="false" >
+        <appender-ref ref="file-info" />
+    </logger>
+
+    <logger name="cn.upenny.approve.decisionengine" level="ERROR" additivity="false">
+        <appender-ref ref="file-decision" />
+    </logger>
+
+    <!--配置mybatis显示sql-->
+    <!--
+    <logger name="java.sql.PreparedStatement" level="INFO" />
+    <logger name="java.sql.Connection" level="INFO" />
+    <logger name="java.sql.Statement" level="INFO" />
+    <logger name="com.ibatis" level="INFO" />
+    <logger name="com.ibatis.common.jdbc.SimpleDataSource" level="INFO" />
+    <logger name="com.ibatis.common.jdbc.ScriptRunner" level="INFO"/>
+    <logger name="com.ibatis.sqlmap.engine.impl.SqlMapClientDelegate" level="INFO" />
+    -->
+    <logger name="venus" level="WARN" />
+    <logger name="org.quartz" level="WARN" />
+    <logger name="com.meidusa" level="WARN" />
+    <logger name="org.apache.commons" level="WARN" />
+
+
+
+    <!-- 生产环境，将此级别配置为适合的级别，以名日志文件太多或影响程序性能 -->
+    <root level="INFO">
+        <appender-ref ref="file-info" />
+        <appender-ref ref="file-error" />
+    </root>
+</configuration>

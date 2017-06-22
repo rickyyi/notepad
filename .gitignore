@@ -1,0 +1,10 @@
+*.idea
+*.project
+*.classpath
+*.iml
+*/WEB-INF/lib
+*/classes
+*/target/*.jar
+*.class
+/*/*/target/
+/*/*/.settings/
