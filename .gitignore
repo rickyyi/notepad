@@ -6,5 +6,5 @@
 */classes
 */target/*.jar
 *.class
-/*/*/target/
+/*/target/
 /*/*/.settings/
